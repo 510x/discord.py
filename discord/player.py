@@ -34,7 +34,7 @@ import json
 import sys
 import re
 import io
-
+import orjson
 from typing import Any, Callable, Generic, IO, Optional, TYPE_CHECKING, Tuple, TypeVar, Union
 
 from .enums import SpeakingState
@@ -549,7 +549,7 @@ class FFmpegOpusAudio(FFmpegAudio):
         codec = bitrate = None
 
         if output:
-            data = json.loads(output)
+            data = orjson.loads(output)
             streamdata = data['streams'][0]
 
             codec = streamdata.get('codec_name')

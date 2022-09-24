@@ -1,4 +1,6 @@
-discord.py
+discord.py [I have no clue if it works]
+# The commits createde are from https://github.com/ju/pycord
+# I just added them to discord.py (most of them not all too lazy)
 ==========
 
 .. image:: https://discord.com/api/guilds/336642139381301249/embed.png

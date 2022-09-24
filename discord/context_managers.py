@@ -23,7 +23,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 from __future__ import annotations
-
+import time
 import asyncio
 from typing import TYPE_CHECKING, Generator, Optional, Type, TypeVar
 
@@ -70,12 +70,16 @@ class Typing:
         return self.wrapped_typer().__await__()
 
     async def do_typing(self) -> None:
-        channel = await self._get_channel()
+        try:
+            channel = self._channel
+            max_time = time.time() + 300
+        except AttributeError:
+            channel = await self._get_channel()
         typing = channel._state.http.send_typing
-
-        while True:
-            await asyncio.sleep(5)
+        
+        while not time.time() > max_time:
             await typing(channel.id)
+            await asyncio.sleep(5)
 
     async def __aenter__(self) -> None:
         channel = await self._get_channel()

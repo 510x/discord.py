@@ -1522,6 +1522,7 @@ class Webhook(BaseWebhook):
         thread_name: str = MISSING,
         wait: Literal[True],
         suppress_embeds: bool = MISSING,
+        delete_after: float = None
     ) -> WebhookMessage:
         ...
 
@@ -1544,6 +1545,7 @@ class Webhook(BaseWebhook):
         thread_name: str = MISSING,
         wait: Literal[False] = ...,
         suppress_embeds: bool = MISSING,
+        delete_after: float = None
     ) -> None:
         ...
 
@@ -1645,7 +1647,9 @@ class Webhook(BaseWebhook):
             Whether to suppress embeds for the message. This sends the message without any embeds if set to ``True``.
 
             .. versionadded:: 2.0
-
+        delete_after: :class:`flat`
+            Delete webhook message after sent
+        
         Raises
         --------
         HTTPException
@@ -1742,7 +1746,13 @@ class Webhook(BaseWebhook):
         if view is not MISSING and not view.is_finished():
             message_id = None if msg is None else msg.id
             self._state.store_view(view, message_id)
-
+            
+        if delete_after is not None:
+            async def delete():
+                await asyncio.sleep(delete_after)
+                await msg.delete()
+            asyncio.ensure_future(delete(), loop=self._state.loop)
+            
         return msg
 
     async def fetch_message(self, id: int, /, *, thread: Snowflake = MISSING) -> WebhookMessage:
